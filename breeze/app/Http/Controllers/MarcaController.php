@@ -37,7 +37,7 @@ class MarcaController extends Controller
             ],
             [
             'mkNombre.required'=>'Este campo es requerido.',
-            'mkNombre.min'=>'La marca debe tener al menos dos caracteres.',
+            'mkNombre.min'=>'La marca debe tener al menos 2 caracteres.',
             'mkNombre.max'=>'La marca no debe exceder de los 50 caracteres.'
             ]
         );
