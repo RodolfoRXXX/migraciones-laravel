@@ -14,7 +14,8 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        //
+        $categorias = Categoria::orderBy('catNombre')->paginate(3);
+        return view('categorias', ['categorias'=>$categorias]);
     }
 
     /**

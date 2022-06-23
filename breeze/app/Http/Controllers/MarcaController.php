@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marca;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 
 class MarcaController extends Controller
@@ -14,7 +15,8 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        //
+        $marcas = Marca::orderBy('mkNombre')->paginate(3);
+        return view('marcas', ['marcas'=>$marcas]);
     }
 
     /**
@@ -24,7 +26,21 @@ class MarcaController extends Controller
      */
     public function create()
     {
-        //
+        return view('/marcaCreate');
+    }
+
+    /*Función de validación de Marcas */
+    private function validarMarca(Request $request){
+        $request->validate(
+            [
+            'mkNombre'=>'required|min:2|max:50'
+            ],
+            [
+            'mkNombre.required'=>'Este campo es requerido.',
+            'mkNombre.min'=>'La marca debe tener al menos dos caracteres.',
+            'mkNombre.max'=>'La marca no debe exceder de los 50 caracteres.'
+            ]
+        );
     }
 
     /**
@@ -35,7 +51,13 @@ class MarcaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $mkNombre = $request->mkNombre;
+        $this->validarMarca($request);
+        $Marca = new Marca;
+        $Marca->mkNombre = $mkNombre;
+        $Marca->save();
+            return redirect('/marcas')
+                    ->with(['mensaje'=>'La marca '.$mkNombre.' ha sido agregada correctamente.']);
     }
 
     /**
@@ -55,9 +77,11 @@ class MarcaController extends Controller
      * @param  \App\Models\Marca  $marca
      * @return \Illuminate\Http\Response
      */
-    public function edit(Marca $marca)
+    public function edit( $id )
     {
-        //
+        $Marca = Marca::find($id);
+        
+        return view('/marcaEdit', ['Marca'=>$Marca]);
     }
 
     /**
@@ -67,9 +91,17 @@ class MarcaController extends Controller
      * @param  \App\Models\Marca  $marca
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Marca $marca)
+    public function update(Request $request)
     {
-        //
+        $mkNombre = $request->mkNombre;
+        $this->validarMarca($request);
+
+        $Marca = Marca::find($request->idMarca);
+        $Marca->mkNombre = $mkNombre;
+        $Marca->save();
+
+            return redirect('/marcas')
+                    ->with(['mensaje'=>'La marca '.$mkNombre.' ha sido modificada.']);
     }
 
     /**
@@ -78,8 +110,25 @@ class MarcaController extends Controller
      * @param  \App\Models\Marca  $marca
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Marca $marca)
+    private function productoPorMarca($id){
+        $check = Producto::where('idMarca', $id)->first();
+            return $check;
+    }
+
+    public function confirm($id){
+        $Marca = Marca::find($id);
+        if(!$this->productoPorMarca($id)){
+            return view('marcaDelete', ['Marca'=>$Marca]);
+        }
+
+        return redirect('/marcas')
+                ->with(['mensaje'=>'La marca '.$Marca->mkNombre.' tiene productos asignados a ella.']);
+    }
+
+    public function destroy(Request $request)
     {
-        //
+        Marca::destroy($request->idMarca);
+            return redirect('/marcas')
+                ->with(['mensaje'=>'La marca '.$request->mkNombre.' ha sido eliminada.']);
     }
 }
