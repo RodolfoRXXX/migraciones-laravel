@@ -57,3 +57,12 @@ Route::delete('/categoria/destroy', [CategoriaController::class, 'destroy'])->mi
 
 /* CRUD de PRODUCTOS */
 Route::get('/productos', [ProductoController::class, 'index'])->middleware(['auth'])->name('productos');
+
+Route::get('/producto/create', [ProductoController::class, 'create'])->middleware(['auth']);
+Route::post('/producto/store', [ProductoController::class, 'store'])->middleware(['auth']);
+
+Route::get('/producto/edit/{id}', [ProductoController::class, 'edit'])->middleware(['auth']);
+Route::patch('/producto/update', [ProductoController::class, 'update'])->middleware(['auth']);
+
+Route::get('/producto/delete/{id}', [ProductoController::class, 'confirm'])->middleware(['auth']);
+Route::delete('/producto/destroy', [ProductoController::class, 'destroy'])->middleware(['auth']);
